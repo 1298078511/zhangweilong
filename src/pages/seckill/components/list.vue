@@ -8,14 +8,7 @@
       border
       :tree-props="{children: 'children'}"
     >
-      <el-table-column prop="id" label="分类编号" sortable></el-table-column>
-      <el-table-column prop="catename" label="分类名称" sortable></el-table-column>
-      <el-table-column label="图片" sortable>
-        <template slot-scope="scope">
-          <img :src="$imgPre+scope.row.img" alt v-if="scope.row.pid!=0"/>
-        </template>
-      </el-table-column>
-
+      <el-table-column prop="title" label="活动名称" ></el-table-column>
       <el-table-column label="状态">
         <template slot-scope="scope">
           <el-button type="primary" v-if="scope.row.status===1">启用</el-button>
@@ -35,22 +28,22 @@
  
 
 <script>
-import { reqcateDel } from "../../../utils/http";
+import {reqseckDel } from "../../../utils/http";
 import { successAlert } from "../../../utils/alert";
 import { mapGetters, mapActions } from "vuex";
 export default {
  
   computed: {
     ...mapGetters({
-      list: "cate/list",
+      list: "seck/list",
     }),
   },
   methods: {
     ...mapActions({
-      reqList: "cate/reqList",
+      reqList: "seck/reqList",
     }),
     del(id) {
-      reqcateDel(id).then((res) => {
+      reqseckDel(id).then((res) => {
         if (res.data.code == 200) {
           successAlert(res.data.msg);
           this.reqList();

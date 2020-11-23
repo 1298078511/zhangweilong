@@ -1,46 +1,60 @@
 <template>
-  <div>
-    <el-button type="primary" @click="add()">添加</el-button>
-    <list @edit="edit"></list>
-    <v-form :info="info" ref="cate"></v-form>
+    <div>
+    <el-button type="primary" @click="willAdd">添加</el-button>
+
+   
+    <v-list :info="info" @edit="edit"></v-list>
+
+    
+    <v-form :info="info" ref="form"></v-form>
   </div>
 </template>
 
 <script>
-import list from "./components/list.vue";
+import {mapGetters,mapActions} from "vuex"
+import vList from "./components/list.vue";
 import vForm from "./components/form.vue";
-
+import { reqbannerList } from "../../utils/http";
 export default {
-  data() {
-    return {
-      info: {
-        isShow: false,
-        title: "轮播图添加"
-      }
-    };
-  },
-  components: {
-    list,
+  components:{
+    vList,
     vForm
   },
+  data() {
+    return {
+      info:{
+         isshow: false,
+        title: "添加轮播图"
+      }
+    }
+  },
+  computed: {
+    ...mapGetters({})
+  },
   methods: {
-    edit(id) {
-      this.info = {
-        isShow: true,
-        title: "轮播图编辑"
-      };
-  this.$refs.cate.getOne(id)
-    },
-    add() {
-      this.info = {
-        isShow: true,
-        title: "轮播图添加"
-      };
+    ...mapActions({}),
+    willAdd(){
+    this.info={
+        isshow:true,
+        title:"添加轮播图"
     }
 
+  },
+  edit(id){
+  this.info={
+        isshow:true,
+        title:"编辑轮播图"
+    };
+    this.$refs.form.getOne(id);
+    
   }
-};
+  },
+  
+  
+
+}
 </script>
 
-<style>
+<style scoped>
+
 </style>

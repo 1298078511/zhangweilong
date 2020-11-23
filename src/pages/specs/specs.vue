@@ -1,52 +1,57 @@
 <template>
   <div>
     <el-button type="primary" @click="willAdd">添加</el-button>
-    <v-from :info='info' ref='from'></v-from>
-    <v-list @edit='edit'></v-list>
+    <v-list @edit="edit"></v-list>
+    
+    <v-form :info="info" ref="form"></v-form>
   </div>
 </template>
 
 <script>
-import { mapGetters, mapActions } from "vuex";
-import vFrom from "./components/from";
-import vList from "./components/list";
+import  vList from "./components/list.vue"
+import  vForm from "./components/form.vue"
+import  {mapGetters,mapActions} from "vuex"
+
 export default {
+  components:{
+    vList,
+    vForm
+  },
   data() {
     return {
-      //初始化info
-      info: {
-        isShow: false,
-        title: "商品添加",
-      },
-    };
-  },
-  methods: {
-    ...mapActions({}),
-    //当点击了添加之后
-    willAdd() {
-      this.info = {
-        isShow: true,
-        title: "商品添加",
-      };
-    },
-    //编辑
-    edit(id){
-      this.info = {
-        isShow:true,
-        title:'商品编辑'
+      info:{
+        isshow:false,
+        title:"添加规格"
       }
-      this.$refs.from.getOne(id)
     }
   },
   computed: {
-    ...mapGetters({}),
+    ...mapGetters({})
   },
-  components: {
-    vFrom,
-    vList,
+  methods: {
+    ...mapActions({}),
+    willAdd(){
+      this.info={
+        isshow:true,
+        title:"添加规格"
+      }
+    },
+    edit(id){
+      this.info={
+        isshow:true,
+        title:"编辑规格"
+      }
+      this.$refs.form.getOne(id)
+    }
   },
-};
+  
+
+
+  mounted() {}
+
+}
 </script>
 
 <style>
+
 </style>

@@ -1,12 +1,16 @@
 <template>
   <div>
-    <router-view></router-view>
+  <!-- 一级路由 -->
+  <router-view></router-view>
   </div>
 </template>
 
 <script>
-export default {
 
+export default { 
+  components: {
+  
+  }
 }
 </script>
 

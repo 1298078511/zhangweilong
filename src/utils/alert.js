@@ -1,18 +1,20 @@
-import Vue from 'vue'
-let vm = new Vue()
+import Vue from "vue"
+let vm= new Vue()
 
-//成功时候的弹框
-export const successAlert = (msg) => {
-    vm.$message({
-        message: msg,
-        type: "success"
-    })
-}
 
-//失败时候的弹框\
-export const errorAlert = (msg) => {
+//成功弹窗
+   export const successAlert=(msg)=>{
+       vm.$message({
+           message:msg,
+           type:"success"
+       })
+   }
+
+//失败弹窗
+
+export const errAlert=(msg)=>{
     vm.$message({
-        message: msg,
-        type: 'warning'
+        message:msg,
+        type:"warning"
     })
 }

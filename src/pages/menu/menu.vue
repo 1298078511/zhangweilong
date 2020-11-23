@@ -1,68 +1,54 @@
 <template>
   <div>
-      <el-button type="primary" @click="willAdd">添加</el-button>
-      <!-- 列表 -->
-      <!-- 将数据传输给v-list -->
-      <v-list :list='list' @init='init' @edit='edit($event)'></v-list>
-      <!-- 弹框 -->
-      <!-- 将数据传输给v-from -->
-      <v-from :info='info' :list='list' @init='init' ref='from'></v-from>
+    <!-- 添加按钮 -->
+    <el-button type="primary" @click="willAdd">添加</el-button>
+    <!-- table -->
+    <v-list :list="list" @init="init" @edit="edit($event)"></v-list>
+    <!-- 弹框 -->
+    <v-form :info="info" :list="list" @init="init" ref="form"></v-form>
   </div>
 </template>
 
 <script>
-import {mapGetters,mapActions} from 'vuex'
-//引入组件
-import vList from './components/list'
-import vFrom from './components/from'
-import { reqMenuList } from '../../utils/http'
+import { reqMenuList } from "../../utils/http";
+import vList from "./components/list.vue";
+import vForm from "./components/form.vue";
 export default {
-    data(){
-        return {
-            info:{
-                isShow:false,
-                title:'添加菜单'
-            },
-            //列表数据 由于list.vue 和form.vue都要使用列表数据，所以将列表数据放到menu.vue中，分别传递给list.vue和form.vue
-            list:[]
-        }
+  components: {
+    vList,
+    vForm,
+  },
+  data() {
+    return {
+      //弹框状态，用对象直接可以改
+      info: {
+        isshow: false,
+         title:"添加菜单"
+      },
+      list: [],
+    };
+  },
+  methods: {
+    willAdd() {
+      this.info.isshow = true;
+      this.info.title="添加菜单"
     },
-    methods:{
-        ...mapActions({}),
-        willAdd(){
-            this.info.isShow = true,
-            this.info.title = '添加菜单'
-        },
-        init(){
-            reqMenuList().then(res=>{
-                console.log(res)
-                this.list = res.data.list
-            })
-        },
-        //从新编写edit编辑
-        edit(id){
-            //出现弹框
-            this.info.isShow = true;
-            //给info添加一个字段,用来判断是添加点击还是编辑点击的按钮
-            this.info.title = '编辑菜单';
-            //父组件调用子组件的方法
-            this.$refs.from.getOne(id)
-        }
+    init() {
+      reqMenuList().then(res => {
+        this.list = res.data.list;
+      });
     },
-    mounted(){
-        this.init();
+    edit(id) {
+      this.info.isshow = true;
+      this.info.title = "编辑菜单";
+      this.$refs.form.getOne(id);
     },
-    computed:{
-        ...mapGetters({})
-    },
-    //注册组件
-    components:{
-        vList,
-        vFrom
-    }
-}
+  },
+  mounted() {
+    this.init();
+  },
+};
 </script>
 
 <style>
-
 </style>

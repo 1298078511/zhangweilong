@@ -1,3 +1,4 @@
-import Vue from 'vue'
-import delBth from './delBth.vue'
-Vue.component('delBtn',delBth)
+import Vue from "vue"
+
+import delBtn from "./delBtn.vue"
+Vue.component("delBtn",delBtn)

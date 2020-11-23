@@ -1,15 +1,15 @@
 <template>
   <div>
+      <!-- 21.展示list -->
     <el-table
       :data="list"
-      style="width: 100%"
+      style="width: 100%;margin-bottom: 20px;"
       row-key="id"
       border
-      lazy
       :tree-props="{children: 'children'}"
     >
-      <el-table-column prop="id" label="菜单编号"></el-table-column>
-      <el-table-column prop="title" label="菜单名称"></el-table-column>
+      <el-table-column prop="id" label="菜单编号" sortable></el-table-column>
+      <el-table-column prop="title" label="菜单名称" sortable></el-table-column>
       <el-table-column label="菜单图标">
         <template slot-scope="scope">
           <i :class="scope.row.icon"></i>
@@ -33,50 +33,36 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from "vuex";
-import { reqMenuAdd, reqMenuDel } from "../../../utils/http";
-import { successAlert,errorAlert } from '../../../utils/alert';
+import {reqMenuDel} from "../../../utils/http"
+import {successAlert,errAlert} from "../../../utils/alert"
 export default {
-  props: ["list"],
-  methods: {
-    ...mapActions({}),
-    //当点击删除按钮之后
-    del(id) {
-      this.$confirm("你确定要删除吗?", "删除提示", {
-        confirmButtonText: "确定",
+    props:["list"],
+    methods: {
+      del(id){
+        this.$confirm("你确定删除嘛？","删除提示",{
+         confirmButtonText: "删除",
         cancelButtonText: "取消",
-        type: "warning",
-      })
-        .then(() => {
-          //删除的ajax请求
+        type: "warning"
+        }).then(()=>{
           reqMenuDel(id).then(res=>{
-              if(res.data.code == 200){
-                  successAlert(res.data.msg);
-                  //通知menu刷新数据
-                  this.$emit('init');
-              }else{
-                  errorAlert(res.data.msg);
-              }
+            if(res.data.code===200){
+                successAlert(res.data.msg)
+                this.$emit("init")
+            }else{
+              errAlert(res.data.msg)
+            }
           })
+        }).catch(()=>{
+          console.log("点击了取消");
         })
-        .catch(() => {
-            console.log('你点击了取消')
-        });
+      },
+      edit(id){
+        this.$emit("edit",id)
+      }
     },
-    //当点击编辑之后
-    edit(id){
-        //通知父组件,要进行编辑了
-        this.$emit('edit',id)
-    }
-  },
-  computed: {
-    ...mapGetters({}),
-  },
-};
+}
 </script>
 
-<style scoped>
-.el-table {
-  margin-top: 10px;
-}
+<style>
+
 </style>

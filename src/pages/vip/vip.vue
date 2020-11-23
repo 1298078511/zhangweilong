@@ -1,62 +1,58 @@
 <template>
-  <div>
-    <el-button type="primary" @click="willAdd">添加</el-button>
-    <v-from :info="info" ref='from' @init='init'></v-from>
-    <v-list :list="list" @edit='edit' @init='init'></v-list>
+    <div>
+    
+   
+    <v-list :info="info" @edit="edit"></v-list>
+
+    
+    <v-form :info="info" ref="form"></v-form>
   </div>
 </template>
 
 <script>
-import { mapGetters, mapActions } from "vuex";
-import { reqVipList } from "../../utils/http";
-import vFrom from "./components/from";
-import vList from "./components/list";
+import {mapGetters,mapActions} from "vuex"
+import vList from "./components/list.vue";
+import vForm from "./components/form.vue";
+import {  } from "../../utils/http";
 export default {
+  components:{
+    vList,
+    vForm
+  },
   data() {
     return {
-      //初始化info
-      info: {
-        isShow: false,
-        title: "会员编辑",
-      },
-      list: [],
-    };
-  },
-  methods: {
-    ...mapActions({}),
-    willAdd() {
-      this.info = {
-        isShow: true,
-      };
-    },
-    //请求列表
-    init() {
-      reqVipList().then((res) => {
-        if (res.data.code == 200) {
-          this.list = res.data.list;
-        }
-      });
-    },
-    //编辑
-    edit(uid){
-        this.info = {
-            isShow : true,
-        }
-        this.$refs.from.getOne(uid)
+      info:{
+        isshow:false,
+        title: "会员修改"
+      }
     }
   },
   computed: {
-    ...mapGetters({}),
+    ...mapGetters({})
   },
-  components: {
-    vFrom,
-    vList,
+  methods: {
+    ...mapActions({}),
+    willAdd(){
+    this.info={
+        isshow:true,
+        title:"会员修改"
+    }
+
   },
-  mounted() {
-    this.init();
+  edit(uid){
+    this.info={
+        isshow:true,
+        title:"会员修改"
+    };
+    this.$refs.form.getOne(uid);
+    
+  }
   },
-};
+  
+
+}
 </script>
 
-<style>
+<style scoped>
+
 </style>

@@ -1,20 +1,24 @@
-export const state = {
-    //定义初始值
+export const state={
     userInfo:sessionStorage.getItem("userInfo")?JSON.parse(sessionStorage.getItem("userInfo")):{}
 }
-export const mutations = {
+
+export const mutations={
     changeUserInfo(state,obj){
-        //vuex和本地存储同步
-        state.userInfo = obj;
+        // vuex和本地存储同步
+        state.userInfo=obj
         if(obj.token){
-            sessionStorage.setItem('userInfo',JSON.stringify(obj));
+            sessionStorage.setItem("userInfo",JSON.stringify(obj))
         }else{
-            sessionStorage.removeItem('userInfo');
+            sessionStorage.removeItem("userInfo")
         }
+        
     }
 }
-export const getters = {
+
+export const getters={
     userInfo(state){
         return state.userInfo
     }
 }
+
+

@@ -1,16 +1,17 @@
 <template>
   <div>
+    <!-- 23.list展示在页面 -->
     <el-table
       :data="list"
-      style="width: 100%"
+      style="width: 100%;margin-bottom: 20px;"
       row-key="id"
       border
-      lazy
       :tree-props="{children: 'children'}"
     >
-      <el-table-column prop="id" label="用户编号" width="100px"></el-table-column>
-      <el-table-column prop="username" label="用户名称"></el-table-column>
-      <el-table-column prop="rolename" label="所属角色"></el-table-column>
+      <el-table-column prop="id" label="用户编号" sortable></el-table-column>
+      <el-table-column prop="username" label="用户名称" sortable></el-table-column>
+      <el-table-column prop="rolename" label="所属角色" sortable></el-table-column>
+
       <el-table-column label="状态">
         <template slot-scope="scope">
           <el-button type="primary" v-if="scope.row.status===1">启用</el-button>
@@ -20,7 +21,8 @@
       <el-table-column label="操作">
         <template slot-scope="scope">
           <el-button type="primary" @click="edit(scope.row.uid)">编辑</el-button>
-          <del-btn style="display:inline-block" @confirm="del(scope.row.uid)"></del-btn>
+          <!-- 32.绑定confirm事件 -->
+          <del-btn @confirm="del(scope.row.uid)"></del-btn>
         </template>
       </el-table-column>
     </el-table>
@@ -28,38 +30,27 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from "vuex";
-import { successAlert } from "../../../utils/alert";
-import { reqManageDel } from "../../../utils/http";
+import {reqUserDel} from "../../../utils/http"
+import { successAlert } from "../../../utils/alert"
 export default {
-  props: ["list", "info"],
-  methods: {
-    ...mapActions({}),
-    //当点击了删除之后
-    del(uid) {
-      //发送删除的请求
-      reqManageDel(uid).then((res) => {
-        if (res.data.code == 200) {
-          //成功弹窗
-          successAlert(res.data.msg);
-          //通知父组件刷新
-          this.$emit("init");
+    props:["list"],
+    methods: {
+        del(uid){
+            reqUserDel(id).then(res=>{
+                if(res.data.code==200){
+                    successAlert(res.data.msg)
+                    this.$emit("init")
+                }
+            })
+        },
+        edit(uid){
+            this.$emit("edit",uid)
         }
-      });
     },
-    //当点击了编辑之后
-    edit(uid) {
-      this.$emit("edit", uid);
-    },
-  },
-  computed: {
-    ...mapGetters({}),
-  },
-};
+
+}
 </script>
 
-<style scoped>
-.el-table {
-  margin-top: 10px;
-}
+<style>
+
 </style>

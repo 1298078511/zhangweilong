@@ -1,5 +1,5 @@
 {
-  "name": "umall",
+  "name": "mydemo",
   "version": "1.0.0",
   "description": "A Vue.js project",
   "author": "",
@@ -11,11 +11,15 @@
   },
   "dependencies": {
     "axios": "^0.21.0",
+    "echarts": "^4.9.0",
     "element-ui": "^2.14.1",
     "qs": "^6.9.4",
+    "stylus": "^0.54.8",
+    "stylus-loader": "^3.0.0",
     "vue": "^2.5.2",
-    "vue-router": "^3.0.1",
-    "vuex": "^3.5.1"
+    "vue-router": "^3.4.9",
+    "vuex": "^3.5.1",
+    "wangeditor": "^4.4.0"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.2",

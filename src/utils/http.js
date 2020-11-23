@@ -1,258 +1,301 @@
-import axios from 'axios';
-import qs from 'qs';
-import { errorAlert } from './alert'
-import store from '../store'
-import Vue from 'vue'
+import axios from "axios"
+import store from "../store"
+import qs from "qs"
+import {errAlert} from "./alert.js"
+import router from "../router"
+import Vue from "vue"
 
-//开发环境使用
-let baseUrl = '/my';
-Vue.prototype.$imgPre = "http://localhost:3000"
+//开发环境使用 8080
+let baseUrl="/aaa"
+Vue.prototype.$imgPre="http://localhost:3000"
+//生产环境使用 打包
+// let baseUrl=""
+// Vue.prototype.$imgPre=""
+//请求拦截
+axios.interceptors.request.use(req=>{
+    if (req.url != baseUrl + "/api/userlogin") {
+        req.headers.authorization = store.state.userInfo.token;
+    }
+    return req 
+})
 
-//生产环境使用
-// let baseUrl = '';
-// Vue.prototype.$imgPre=" "
 
 
+//响应拦截
+axios.interceptors.response.use(res=>{
+    console.log("本次请求地址是："+res.config.url);
+    console.log(res);
+    if(res.data.code!==200){
+        errAlert(res.data.msg) 
+    }
+    if(res.data.msg==="登录已过期或访问权限受限"){
+        store.dispatch('changUser', {})
+        router.push("/login")
+    }
+    return res
+})
+   
 
-// --------------------------菜单开始---------------------------
+// ===========菜单接口 开始====================
+
+//.添加
+export const reqMenuAdd=(form)=>{
+    return axios({
+        url:baseUrl+"/api/menuadd",
+        method:"post",
+        data:qs.stringify(form)
+    })
+}
+
+//.列表交互
+export const reqMenuList=()=>{
+    return axios({
+        url:baseUrl+"/api/menulist",
+        method:"get",
+        params:{
+            istree:true
+        }
+    })
+}
+
+// 删除
+export const reqMenuDel=(id)=>{
+    return axios({
+        url:baseUrl+"/api/menudelete",
+        method:"post",
+        data:qs.stringify({
+            id:id
+        })
+    })
+}
+
+// 获取一条数据
+export const reqMenuDetail=(id)=>{
+    return axios({
+        url:baseUrl+"/api/menuinfo",
+        method:"get",
+        params:{
+            id:id
+        }
+    })
+}
+//修改
+export const reqMenuUpdate=(form)=>{
+    return axios({
+        url:baseUrl+"/api/menuedit",
+        method:"post",
+        data:qs.stringify(form)
+    })
+}
+// ===========菜单接口 结束====================
+
+// ===========角色管理接口 开始====================
 //添加
-export const reqMenuAdd = (from) => {
+export const reqRoleAdd=(user)=>{
     return axios({
-        url: baseUrl + '/api/menuadd',
-        method: 'post',
-        //避免后台拿不到数据,用qs转换一下
-        data: qs.stringify(from)
+        url:baseUrl+"/api/roleadd",
+        method:"post",
+        data:qs.stringify(user)
     })
 }
-
-//menu的列表交互
-export const reqMenuList = () => {
+//列表
+export const reqRoleList=()=>{
     return axios({
-        url: baseUrl + '/api/menulist',
-        method: 'get',
-        params: {
-            istree: true
-        }
+        url:baseUrl+"/api/rolelist",
+        method:"get",
     })
 }
-
-//menu删除
-export const reqMenuDel = (id) => {
+//删除
+export const reqRoleDel=(id)=>{
     return axios({
-        url: baseUrl + "/api/menudelete",
+        url: baseUrl + "/api/roledelete",
+        method:"post",
+        data:qs.stringify({
+            id:id
+        })
+    })
+}
+//详情页
+ export const reqRoleDetail=(id)=>{
+     return axios({
+         url:baseUrl+"/api/roleinfo",
+         method:"get",
+         params:{
+            id:id
+         }
+     })
+ }
+//更新
+export const reqRoleUpdata=(user)=>{
+    return axios({
+        url:baseUrl+"/api/roleedit",
         method: "post",
-        data: qs.stringify({
-            id: id
+        data:qs.stringify(user)
+    
+    })
+}
+// ===========角色管理接口 结束====================
+
+
+// ===========管理员管理接口 开始====================
+ //添加
+export const reqUserAdd=(user)=>{
+    return axios({
+        url:baseUrl+"/api/useradd",
+        method:"post",
+        data:qs.stringify(user)
+    })
+}
+//列表
+export const reqUserList=(p)=>{
+    return axios({
+        url:baseUrl+"/api/userlist",
+        method:"get",
+        params:p
+    })
+}
+//删除
+export const reqUserDel=(uid)=>{
+    return axios({
+        url: baseUrl + "/api/userdelete",
+        method:"post",
+        data:qs.stringify({
+            uid:uid
         })
     })
 }
-
-//只请求一条数据
-export const reqMenuDetail = (id) => {
+//详情页
+ export const reqUserDetail=(uid)=>{
+     return axios({
+         url:baseUrl+"/api/userinfo",
+         method:"get",
+         params:{
+            uid:uid
+         }
+     })
+ }
+//更新
+export const reqUserUpdata=(user)=>{
     return axios({
-        url: baseUrl + '/api/menuinfo',
-        method: 'get',
-        params: {
-            id: id
-        }
+        url:baseUrl+"/api/useredit",
+        method: "post",
+        data:qs.stringify(user)
+    
     })
 }
-
-//菜单修改的请求
-export const reqMenuUpdate = (from) => {
+//  总数
+export const reqUserCount = () => {
     return axios({
-        url: baseUrl + '/api/menuedit',
-        method: 'post',
-        data: qs.stringify(from)
-    })
-}
-//------------------菜单结束-------------------
-
-//------------------角色开始-------------------
-//角色列表
-export const reqRoleList = () => {
-    return axios({
-        url: baseUrl + "/api/rolelist",
+        url: baseUrl + "/api/usercount",
         method: "get",
-    })
-}
-//角色添加
-export const reqRoleAdd = (from) => {
-    return axios({
-        url: baseUrl + '/api/roleadd',
-        method: 'post',
-        data: qs.stringify(from)
-    })
-}
-//角色删除
-export const reqRoleDel = (id) => {
-    return axios({
-        url: baseUrl + '/api/roledelete',
-        method: 'post',
-        data: {
-            id: id
-        }
-    })
-}
-//获取一条数据
-export const reqRoleDetail = (id) => {
-    return axios({
-        url: baseUrl + '/api/roleinfo',
-        method: 'get',
-        params: {
-            id: id
-        }
-    })
-}
-//角色修改
-export const reqRoleUpdate = (from) => {
-    return axios({
-        url: baseUrl + '/api/roleedit',
-        method: 'post',
-        data: qs.stringify(from)
-    })
-}
-//---------------------角色结束----------------------
 
-//---------------------管理员开始--------------------
-//管理员添加
-export const reqManageAdd = (from) => {
-    return axios({
-        url: baseUrl + '/api/useradd',
-        method: 'post',
-        data: qs.stringify(from)
     })
 }
-//管理员总数
-export const reqManageCount = () => {
-    return axios({
-        url: baseUrl + '/api/usercount',
-        method: 'get'
-    })
-}
-//管理员列表 分页 p = {page:0,size:0}
-export const reqManageList = (p) => {
-    return axios({
-        url: baseUrl + '/api/userlist',
-        method: 'get',
-        params: p
-    })
-}
-//管理员获取一条
-export const reqManageDetail = (uid) => {
-    return axios({
-        url: baseUrl + '/api/userinfo',
-        method: 'get',
-        params: {
-            uid: uid
-        }
-    })
-}
-//管理员修改
-export const reqManageUpdate = (from) => {
-    return axios({
-        url: baseUrl + '/api/useredit',
-        method: 'post',
-        data: qs.stringify(from)
-    })
-}
-//管理员删除
-export const reqManageDel = (uid) => {
-    return axios({
-        url: baseUrl + '/api/userdelete',
-        method: 'post',
-        data: {
-            uid: uid
-        }
-    })
-}
-//管理员登录
-export const reqLogin = (user) => {
-    return axios({
-        url: baseUrl + '/api/userlogin',
-        method: 'post',
-        data: qs.stringify(user)
-    })
-}
-//------------------------管理员结束-----------------------
 
-//------------------------商品分类开始---------------------
-//商品分类添加
-export const reqCateAdd = (cate) => {
-    let d = new FormData()
-    for (let i in cate) {
-        d.append(i, cate[i])
+// ===========管理员管理接口 结束====================
+
+
+// ===========登录接口 开始====================
+
+export const reqLogin=(user)=>{
+    return axios({
+        url:baseUrl + "/api/userlogin",
+        method:"post",
+        data:qs.stringify(user)
+    })
+}
+
+// ===========商品分类接口 开始====================
+ //添加
+ export const reqcateAdd = (cate) => {
+    let d=new FormData()
+    for(let i in cate){
+        d.append(i,cate[i])
     }
+
     return axios({
-        url: baseUrl + '/api/cateadd',
-        method: 'post',
-        data: d
+        url: baseUrl + "/api/cateadd",
+        method: "post",
+        data:d
     })
 }
-//商品列表
-export const reqCateList = (p) => {
+//列表
+export const reqcateList=(p)=>{
     return axios({
-        url: baseUrl + "/api/catelist",
-        method: "get",
-        params: p
+        url:baseUrl+"/api/catelist",
+        method:"get",
+        params:p
     })
 }
-//商品分类获取一条
-export const reqCateInfo = (id) => {
+//删除
+export const reqcateDel=(id)=>{
     return axios({
-        url: baseUrl + '/api/cateinfo',
-        method: 'get',
-        params: {
-            id: id
-        }
-    })
-}
-//商品分类修改
-export const reqCateUpdate = (cate) => {
-    let d = new FormData();
-    for (let i in cate) {
-        d.append(i, cate[i])
-    }
-    return axios({
-        url: baseUrl + '/api/cateedit',
-        method: 'post',
-        data: d
-    })
-}
-//商品分类删除
-export const reqCateDel = (id) => {
-    return axios({
-        url: baseUrl + '/api/catedelete',
-        method: 'post',
-        data: qs.stringify({
-            id: id
+        url: baseUrl + "/api/catedelete",
+        method:"post",
+        data:qs.stringify({
+            id:id
         })
     })
 }
-//-------------------------商品分类结束--------------------------
+//详情页
+ export const reqcateDetail=(id)=>{
+     return axios({
+         url:baseUrl+"/api/cateinfo",
+         method:"get",
+         params:{
+            id:id
+         }
+     })
+ }
+//更新
+export const reqcateUpdata=(cate)=>{
+    let d=new FormData()
+    for(let i in cate){
+        d.append(i,cate[i])
+    }
+    return axios({
+        url:baseUrl+"/api/cateedit",
+        method: "post",
+        data:d
+    
+    })
+}
+// //  总数
+// export const reqUserCount = () => {
+//     return axios({
+//         url: baseUrl + "/api/usercount",
+//         method: "get",
 
-//-------------------------商品规格开始--------------------------
-//商品规格添加
-export const reqSpecsAdd = (user) => {
+//     })
+// }
+
+
+// ===========商品分类接口 结束====================
+
+
+
+
+
+// ===========商品规格接口 开始====================
+ //添加
+ export const reqspecsAdd = (user) => {
 
     return axios({
         url: baseUrl + "/api/specsadd",
         method: "post",
-        data: qs.stringify(user)
+        data:qs.stringify(user)
     })
 }
-
-//商品规格列表 p={page:1,size:10}
-export const reqSpecsList = (p) => {
+//列表
+export const reqspecsList=(p)=>{
     return axios({
-        url: baseUrl + "/api/specslist",
-        method: "get",
-        params: p
+        url:baseUrl+"/api/specslist",
+        method:"get",
+        params:p
     })
 }
-
-//商品规格删除删除
-export const reqSpecsDel = (id) => {
+//删除
+export const reqspecsDel = (id) => {
     return axios({
         url: baseUrl + "/api/specsdelete",
         method: "post",
@@ -261,146 +304,195 @@ export const reqSpecsDel = (id) => {
         })
     })
 }
-
-//商品规格只获取一条
-export const reqSpecsInfo = id => {
-    return axios({
-        url: baseUrl + "/api/specsinfo",
-        method: "get",
-        params: {
-            id: id
-        }
-    })
-}
-
-//商品规格修改
-export const reqSpecsUpdate = (user) => {
-
+//详情页
+ export const reqspecsDetail=(id)=>{
+     return axios({
+         url:baseUrl+"/api/specsinfo",
+         method:"get",
+         params:{
+            id:id
+         }
+     })
+ }
+//更新
+export const reqspecsUpdate = (user) => {
+   
     return axios({
         url: baseUrl + "/api/specsedit",
         method: "post",
         data: qs.stringify(user)
     })
 }
-export const reqSpecsCount = () => {
+//总数
+export const reqspecsCount = () => {
+   
     return axios({
         url: baseUrl + "/api/specscount",
         method: "get",
     })
 }
-//------------------------商品规格结束-------------------------
+// ===========商品规格接口 结束====================
 
-//------------------------会员管理开始-------------------------
-//会员管理列表
-export const reqVipList = () => {
-    return axios({
-        url: baseUrl + '/api/memberlist',
-        method: 'get'
-    })
-}
-//请求一条
-export const reqVipInfo = (uid) => {
-    return axios({
-        url: baseUrl + '/api/memberinfo',
-        method: 'get',
-        params: {
-            uid: uid
-        }
-    })
-}
-//会员修改
-export const reqVipUpdate = (user) => {
-    return axios({
-        url: baseUrl + '/api/memberedit',
-        method: 'post',
-        data: qs.stringify(user)
-    })
-}
-//------------------会员管理结束----------------------
 
-//------------------轮播图管理------------------------
-//添加
-export const reqBannerAdd = (user) => {
-    let d = new FormData();
-    for(let i in user){
-        d.append(i,user[i])
+// ===========会员管理接口 开始====================
+
+//列表
+export const reqmemberList=()=>{
+    return axios({
+        url:baseUrl+"/api/memberlist",
+        method:"get",
+      
+    })
+}
+//详情页
+ export const reqmemeberDetail=(uid)=>{
+     return axios({
+         url:baseUrl+"/api/memberinfo",
+         method:"get",
+         params:{
+            uid:uid
+         }
+     })
+ }
+//更新
+export const reqmemberUpdate = (uid) => {
+   
+    return axios({
+        url: baseUrl + "/api/memberedit",
+        method: "post",
+        data:qs.stringify(uid
+            )
+    })
+}
+
+// ============会员管理接口 结束====================
+
+// ============轮播图管理接口 开始====================
+
+ //添加
+ export const reqbannerAdd = (list) => {
+    let d=new FormData()
+    for(let i in list){
+        d.append(i,list[i])
     }
     return axios({
-        url: baseUrl + '/api/banneradd',
-        method: 'post',
+        url: baseUrl + "/api/banneradd",
+        method: "post",
         data:d
     })
 }
 //列表
-export const reqBannerList = () => {
+export const reqbannerList=()=>{
     return axios({
-        url: baseUrl + '/api/bannerlist',
-        method:'get'
-    })
-}
-//获取一条
-export const reqBannerDetail = (id) => {
-    return axios({
-        url: baseUrl + '/api/bannerinfo',
-        method: 'get',
-        params:{
-            id:id
-        }
-    })
-}
-//修改
-export const reqBannerUpdate = (user) => {
-    let d = new FormData
-    for(let i in user){
-        d.append(i,user[i])
-    }
-    return axios({
-        url: baseUrl + '/api/banneredit',
-        method:'post',
-        data:d
+        url:baseUrl+"/api/bannerlist",
+        method:"get",
     })
 }
 //删除
-export const reqBannerDel = (id) => {
+export const reqbannerDel = (id) => {
     return axios({
-        url: baseUrl + '/api/bannerdelete',
-        method: 'post',
-        params:{
-            id:id
-        }
+        url: baseUrl + "/api/bannerdelete",
+        method: "post",
+        data: qs.stringify({
+            id: id
+        })
     })
 }
-//-----------------------轮播图管理结束------------------------
-
-//-----------------------商品管理开始--------------------------
-//添加
-export const reqGoodsAdd = (goods) => {
-    let d = new FormData
-    for(let i in goods){
-        d.append(i,goods[i])
+//详情页
+ export const reqbannerDetail=(id)=>{
+     return axios({
+         url:baseUrl+"/api/bannerinfo",
+         method:"get",
+         params:{
+            id:id
+         }
+     })
+ }
+//更新
+export const reqbannerUpdate = (list) => {
+    let d=new FormData()
+    for(let i in list){
+        d.append(i,list[i])
     }
     return axios({
-        url: baseUrl + '/api/goodsadd',
-        method: 'post',
-        data:d
+        url: baseUrl + "/api/banneredit",
+        method: "post",
+        data: d
     })
 }
-//总数
-export const reqGoodsCount = () => {
+// ============轮播图管理接口 结束====================
+
+
+// ===========秒杀接口 开始====================
+
+//添加
+export const reqseckAdd = (list) => {
+
     return axios({
-        url: baseUrl + '/api/goodscount',
-        method: 'get'
+        url: baseUrl + "/api/seckadd",
+        method: "post",
+        data:qs.stringify(list)
     })
 }
-//列表 p={page:1,size:10}
-export const reqgoodsList = (p) => {
+//列表
+export const reqseckList=()=>{
     return axios({
-        url: baseUrl + "/api/goodslist",
-        method: "get",
-        params: p
+        url:baseUrl+"/api/secklist",
+        method:"get",
+      
+    })
+}
+//详情页
+ export const reqseckDetail=(id)=>{
+     return axios({
+         url:baseUrl+"/api/seckinfo",
+         method:"get",
+         params:{
+            id:id
+         }
+     })
+ }
+ //删除
+export const reqseckDel = (id) => {
+    return axios({
+        url: baseUrl + "/api/seckdelete",
+        method: "post",
+        data: qs.stringify({
+            id: id
+        })
+    })
+}
+//更新
+export const reqseckUpdata = (list) => {
+    return axios({
+        url: baseUrl + "/api/seckedit",
+        method: "post",
+        data:qs.stringify(list
+            )
     })
 }
 
+// ============秒杀接口 结束====================
+
+// ============商品接口 开始====================
+
+//添加
+export const reqgoodsAdd = (list) => {
+
+    return axios({
+        url: baseUrl + "/api/goodsadd",
+        method: "post",
+        data:qs.stringify(list)
+    })
+}
+//列表
+export const reqgoodsList=(p)=>{
+    return axios({
+        url:baseUrl+"/api/goodslist",
+        method:"get",
+        params:p
+    })
+}
 //删除
 export const reqgoodsDel = (id) => {
     return axios({
@@ -411,51 +503,31 @@ export const reqgoodsDel = (id) => {
         })
     })
 }
-
-//详情只获取一条
-export const reqgoodsDetail = id => {
-    return axios({
-        url: baseUrl + "/api/goodsinfo",
-        method: "get",
-        params: {
-            id: id
-        }
-    })
-}
-
-
-
-//修改 文件
-export const reqgoodsUpdate = (user) => {
-    let d=new FormData()
-    for(let i in user){
-        d.append(i,user[i])
-    }
+//详情页
+ export const reqgoodsDetail=(id)=>{
+     return axios({
+         url:baseUrl+"/api/goodsinfo",
+         method:"get",
+         params:{
+            id:id
+         }
+     })
+ }
+//更新
+export const reqgoodsUpdate = (list) => {
+   
     return axios({
         url: baseUrl + "/api/goodsedit",
         method: "post",
-        data: d
+        data: qs.stringify(list)
+    })
+} 
+//总数
+export const reqgoodsCount = () => {
+   
+    return axios({
+        url: baseUrl + "/api/goodscount",
+        method: "get",
     })
 }
-
-
-//-----------------------商品管理结束--------------------------
-
-
-//登录拦截
-axios.interceptors.request.use(req => {
-    if (req.url != baseUrl + '/api/userlogin') {
-        req.headers.authorization = store.state.userInfo.token;
-    }
-    return req
-})
-
-//响应拦截
-axios.interceptors.response.use(res => {
-    console.log('本次请求地址是', res.config.url);
-    console.log(res);
-    if (res.data.code != 200) {
-        errorAlert(res.data.msg)
-    }
-    return res;
-})
+// ============商品接口 结束====================

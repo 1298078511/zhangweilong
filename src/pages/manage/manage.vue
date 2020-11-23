@@ -1,99 +1,86 @@
 <template>
   <div>
-    <el-button type="primary" @click="willAdd()">添加</el-button>
-    <v-list :list="list" @init="newInit" @edit="edit" :info="info"></v-list>
-    <v-from :info="info" @init="newInit" ref="from"></v-from>
+    <el-button type="primary" @click="willAdd">添加</el-button>
+
+    <v-list :list="list" @init="newInit" @edit="edit"></v-list>
+
     <el-pagination
       background
+      @current-change="changePage"
       layout="prev, pager, next"
       :total="total"
       :page-size="size"
-      @current-change="changePage"
     ></el-pagination>
+    <v-form :info="info" @init="newInit" ref="form"></v-form>
   </div>
 </template>
 
 <script>
-import { mapGetters, mapActions } from "vuex";
-import vFrom from "./components/from";
-import vList from "./components/list";
-import { reqManageList, reqManageCount } from "../../utils/http";
+import { reqUserList,reqUserCount } from "../../utils/http";
+import vList from "./components/list.vue";
+import vForm from "./components/form.vue";
+
 export default {
+  components: {
+    vList,
+    vForm,
+  },
   data() {
     return {
-      //初始化info
       info: {
-        isShow: false,
-        title: "用户添加",
+        isshow: false,
+        title: "添加角色",
       },
-      //初始化list
       list: [],
-      //初始化页码
-      total: 0,
-      size: 2,
-      page: 1,
+      total:0,
+      size:2,
+      page:1
     };
   },
   methods: {
-    ...mapActions({}),
-    willAdd() {
-      this.info.isShow = true;
-    },
-    //列表请求
     init() {
-      reqManageList({ page: this.page, size: this.size }).then((res) => {
+     reqUserList({ page: this.page, size: this.size }).then(res => {
         let list = res.data.list?res.data.list:[]
-        if (list.length === 0 && this.page > 1) {
+      if(list.length===0&&this.page>1){
           this.page--;
           this.init();
-          return;
-        }
-        this.list = list;
+          return        }
+          this.list=list
       });
     },
-    //编辑
     edit(uid) {
       this.info = {
-        isShow: true,
+        isshow: true,
         title: "编辑角色",
       };
-      this.$refs.from.getOne(uid);
+      this.$refs.form.getOne(uid);
     },
-    //获取页码总数量
-    getCount() {
-      reqManageCount().then((res) => {
-        this.total = res.data.list[0].total;
-      });
+    willAdd() {
+      this.info = {
+        isshow: true,
+        title: "添加管理员",
+      };
     },
-    //页码发生变化的时候重新请求
-    changePage(page) {
-      this.page = page;
-      this.init();
+     getCount(){
+      reqUserCount().then(res=>{
+        this.total=res.data.list[0].total
+      })
     },
-    //添加或者删除会引起总数的变化,所以要重新渲染
-    newInit() {
-      this.init();
-      this.getCount();
+    changePage(page){
+      this.page=page;
+      this.init()
     },
+    newInit(){
+      this.init(),
+      this.getCount()
+    }
   },
   mounted() {
-    // 一进来就发送ajax请求渲染列表
     this.init();
-    //一进来就直接获取页码的数量
-    this.getCount();
-  },
-  computed: {
-    ...mapGetters({}),
-  },
-  components: {
-    vList,
-    vFrom,
+     this.getCount()
   },
 };
 </script>
 
 <style>
-.el-pagination {
-  margin-top: 10px;
-}
 </style>

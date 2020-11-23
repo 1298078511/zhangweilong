@@ -1,37 +1,49 @@
 <template>
   <div>
-    <el-button type="primary">添加</el-button>
-    <v-list :info="info"></v-list>
-    <v-from :info="info"></v-from>
+    <el-button type="primary" @click="willAdd">添加</el-button>
+    <v-list @edit="edit"></v-list>
+    <v-form :info="info" ref="form"></v-form>
   </div>
 </template>
-
 <script>
 import { mapGetters, mapActions } from "vuex";
-import vList from './components/list'
-import vFrom from './components/from'
+import vForm from "./components/form.vue"
+import vList from "./components/list.vue"
 export default {
+  components:{
+    vList,
+    vForm
+  },
   data(){
-      return {
-          //初始化info
-          info:{
-              isShow:true,
-              title:'商品添加'
-          }
+    return {
+      info:{
+        isshow:false,
+        title:"添加商品"
       }
+    }
+  },
+  computed: {
+    ...mapGetters({})
   },
   methods: {
     ...mapActions({}),
+    willAdd(){
+      this.info={
+        isshow:true,
+        title:"添加商品"
+      }
+    },
+    //编辑
+    edit(id){
+      this.info={
+        isshow:true,
+        title:"编辑商品"
+      }
+      this.$refs.form.getOne(id)
+    }
   },
-  computed: {
-    ...mapGetters({}),
-  },
-  components:{
-      vList,
-      vFrom
-  }
+  mounted() {}
 };
 </script>
-
-<style>
+<style scoped>
 </style>
