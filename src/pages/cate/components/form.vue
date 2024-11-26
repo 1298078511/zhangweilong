@@ -55,7 +55,7 @@ export default {
          pid: "",
         catename: "",
         img: null,
-        status: 1
+        status: 10
       },
         imgUrl: "",
          rules: {
